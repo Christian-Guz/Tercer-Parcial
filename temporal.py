@@ -67,7 +67,7 @@ leer_archivo()"""
 
 leer_archivo()"""
 
-def leer_archivo():
+"""def leer_archivo():
     #nombre = input("Nombre del archivo: ")
     nombre = "ejemplo.txt"
     
@@ -79,9 +79,27 @@ def leer_archivo():
             print(contenido)
             
             for line in contenido:
-                print(line.strip())
+                print(line.strip()) #Quitar salto de línea del final
             
     except FileNotFoundError:
         print("El archivo no existe")
 
-leer_archivo()
+leer_archivo()"""
+
+def buscar_palabras():
+    nombre = input("nombre del archivo: ")
+    palabra = input("Palabra a buscar: ")
+    
+    try:
+        with open(nombre, "r") as archivo:
+            contenido = archivo.read()
+            
+            if palabra in contenido:
+                print("La palabra fue encontrada")
+            else:
+                print("La palabra no se encuentra en el archivo")
+    
+    except FileNotFoundError:
+        print("El archivo no existe")
+
+buscar_palabras()
