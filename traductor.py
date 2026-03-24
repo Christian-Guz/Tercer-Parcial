@@ -26,13 +26,13 @@ def traducir():
             opc = idioma.get()
             if opc == 1:
                 for español in libro.keys():
-                    if español.lower() == palabra_:
+                    if español.lower() == palabra_.lower():
                         respuesta.config(text=libro[español])
                         return
                 respuesta.config(text="No hay traducción")
             elif opc == 2:
                 for español, ingles in libro.items():
-                    if ingles.lower() == palabra_:
+                    if ingles.lower() == palabra_.lower():
                         respuesta.config(text=español)
                         return
                 respuesta.config(text="No hay traducción")
@@ -51,7 +51,7 @@ def traducir():
 def agregar_palabra():
     nueva_palabra_e = palabra_e.get("1.0", tk.END).strip()
     nueva_palabra_i = palabra_i.get("1.0", tk.END).strip()
-    for español, inlges in libro:
+    for español, inlges in libro.items():
         if español == nueva_palabra_e or inlges == nueva_palabra_i:
             messagebox.showinfo("Palabra repetido", "La palabra ya se encuentra registrada...")
             return
