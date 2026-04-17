@@ -7,12 +7,12 @@ from PIL import Image, ImageTk
 
 #Sección de surtir
 dic_ref ={
-    "coca" : 0,
-    "fanta" : 0,
-    "sprite" : 0,
-    "aga" : 0,
-    "jarrito" : 0,
-    "mundet" : 0
+    "coca" : 5,
+    "fanta" : 5,
+    "sprite" : 5,
+    "aga" : 5,
+    "jarrito" : 5,
+    "mundet" : 5
 }
 
 def surtir_ref(event):
@@ -29,6 +29,7 @@ def surtir_ref(event):
             valor = valor + dic_ref[refresco]
             if valor < 0 :
                 messagebox.showerror("Error", "El número para retirar es mayor de la existente...") 
+                return
             else:
                 dic_ref[refresco] = valor
                 etiq_ref[refresco].config(text=dic_ref[refresco])
@@ -43,16 +44,19 @@ def surtir_ref(event):
 
 #Sección de cambio de precio
 
-dic_ref_pre ={
+"""dic_ref_pre ={
     "coca" : 5,
     "fanta" : 5,
     "sprite" : 5,
     "aga" : 5,
     "jarrito" : 5,
     "mundet" : 5
-}
+}"""
 
-def cambio_precio(event):
+dic_ref_pre = 5
+
+def cambio_precio():
+    #refresco = cambiar.get().lower()
     emergente = tk.Toplevel()
     emergente.title("Cambio de precio")
     emergente.geometry("550x200")
@@ -60,14 +64,19 @@ def cambio_precio(event):
     cambio = tk.Entry(emergente, font=("Arial", 11, "bold"))
     cambio.place(x=10, y=170, width=520)
     def aceptar_cam():
-        precio = float(cambio.get())
-        if precio < 0:
-            messagebox.showerror("Error", "No se pueden ingresar precios negativos...")
-        else:
-            refresco = cambiar.get().lower()
-            dic_ref_pre[refresco] = precio
-            activacion_radio()
-            emergente.destroy()
+        try:
+            precio = float(cambio.get())
+            if precio < 0:
+                messagebox.showerror("Error", "No se pueden ingresar precios negativos...")
+                return
+            else:
+                global dic_ref_pre
+                dic_ref_pre = precio
+                prec.config(text=f"Precio: ${dic_ref_pre}")
+                activacion_radio()
+                emergente.destroy()
+        except ValueError:
+            messagebox.showerror("Error", "Ingrese un número...")
     def cancelar_cam():
         emergente.destroy()
     tk.Button(emergente, text="Aceptar", font=("Arial", 10), command=aceptar_cam).place(x=470, y=20, width=63)
@@ -87,20 +96,28 @@ def din_ent():
             din_camb.config(text="Cambio: $0.0")
         else:
             messagebox.showwarning("Valor no aceptado", "El valor que se ingresó no coincide con el aceptado...")
+            din_entrada.delete(0, "end")
         activacion_radio()
         din_entrada.delete(0, "end")
     except ValueError:
         messagebox.showerror("Error", "No se ingreso un valor...")
+        din_entrada.delete(0, "end")
 
 #Activación de radio botones
 def activacion_radio():
-    for refresco,precio in dic_ref_pre.items(): #Activación de radio botones
-        if dic_ref[refresco] == 0:
-            r_ref[refresco].config(state="disabled")
-        elif dinero_ent >= precio:
-            r_ref[refresco].config(state="active")
+    for refresco_act in dic_ref.keys(): #Activación de radio botones
+        if dic_ref_pre == 0:
+            r_ref[refresco_act].config(state="disabled")
+            opcion_refrescos.set(0)
+            cuadro.config(image="")
+            cuadro.image = None
+        elif dinero_ent >= dic_ref_pre:
+            r_ref[refresco_act].config(state="active")
         else:
-            r_ref[refresco].config(state="disabled")
+            r_ref[refresco_act].config(state="disabled")
+            opcion_refrescos.set(0)
+            cuadro.config(image="")
+            cuadro.image = None
 
 #Funciones de radiobotones
 
@@ -118,8 +135,8 @@ im_ref = ["coca.jpg", "fanta.jpg", "sprite.jpg", "aga.jpg", "jarrito.jpg", "mund
 def cambio_etiqueta_valor():
     val = opcion_refrescos.get()
     ref = valores[val]
-    precio = dic_ref_pre[ref]
-    prec.config(text=f"Precio: ${precio}")
+    #precio = dic_ref_pre[ref]
+    #prec.config(text=f"Precio: ${precio}")
     imagen = Image.open(im_ref[(val - 1)])
     fondo = ImageTk.PhotoImage(imagen)
     cuadro.config(image=fondo)
@@ -134,7 +151,7 @@ def compra():
     if val:
         ref = valores[val]
         global dinero_ent
-        cambio = dinero_ent - dic_ref_pre[ref]
+        cambio = dinero_ent - dic_ref_pre
         din_camb.config(text=f"Cambio: ${cambio}")
         dinero_ent = 0
         din_cont.config(text=f"${dinero_ent}")
@@ -160,13 +177,6 @@ def compra():
     else:
         messagebox.showwarning("Sin elección", "No se ha seleccionado un refresco...")
 
-#Cuadro de agradecimiento
-"""def cuadro_gracias():
-    gracias = tk.Toplevel()
-    gracias.title("Gracias por su compra")
-    gracias.geometry("380x380")
-    tk.Label(gracias, text="Gracias por su compra", font=("Arial", 14, "bold")).pack(pady=20) 
-    tk.Label(gracias, text=f"Su cambio es: ${}", font=("Arial", 12, "bold")).pack(pady=20)""" 
     
 #DISEÑO
 
@@ -185,13 +195,14 @@ tk.Label(ventana, text="Surtir", font=("Arial", 9), bg="white").place(x=0,y=1,wi
 surtir.bind("<<ComboboxSelected>>", surtir_ref)
 
 #Opción de cambiar precio
-camb = ["Coca", "Fanta", "Sprite", "Aga", "Jarrito", "Mundet"]
+tk.Button(ventana, text="Cambiar Precio", command=cambio_precio, relief="groove", bg="white").place(x=60, y=0, width=95, height=22)
+"""camb = ["Coca", "Fanta", "Sprite", "Aga", "Jarrito", "Mundet"]
 cambiar = ttk.Combobox(ventana, values=camb)
 cambiar.set("Cambiar Percio")
 cambiar.place(x=59, y=0, width=110)
 tk.Label(ventana, text="Cambiar Precio", font=("Arial", 9), bg="white").place(x=61,y=1,width=85, height=18)
 
-cambiar.bind("<<ComboboxSelected>>", cambio_precio)
+cambiar.bind("<<ComboboxSelected>>", cambio_precio)"""
 
 #Etiquetas
 tk.Label(ventana, text="0.5, 1, 2, 5, 10", font=("Arial", 15, "bold")).place(x=12, y=30)
@@ -204,7 +215,7 @@ din_entrada.place(y=33, x=155, width=120)
 
 #Botón
 tk.Button(ventana, text="Ingresar", font=("Arial", 10, "bold"), command=din_ent).place(y=80, x=35, width=110)
-prec = tk.Label(ventana, text="Precio: $0", font=("Arial", 15, "bold"))
+prec = tk.Label(ventana, text="Precio: $5", font=("Arial", 15, "bold"))
 prec.place(x=240, y=78)
 
 #Etiqueta de cambio
@@ -220,37 +231,37 @@ opcion_refrescos = tk.IntVar()
 r_coca = tk.Radiobutton(refrescos, text="Coca", variable=opcion_refrescos, value=1, font=("Arial", 15, "bold"),
                         command=cambio_etiqueta_valor, state="disabled")
 r_coca. place(x=30, y=50)
-val_coca = tk.Label(refrescos, text="0", font=("Arial", 15, "bold"))
+val_coca = tk.Label(refrescos, text="5", font=("Arial", 15, "bold"))
 val_coca.place(x=160, y=54)
 
 r_fanta = tk.Radiobutton(refrescos, text="Fanta", variable=opcion_refrescos, value=2, font=("Arial", 15, "bold"), 
                          command=cambio_etiqueta_valor, state="disabled")
 r_fanta. place(x=30, y=100)
-val_fanta = tk.Label(refrescos, text="0", font=("Arial", 15, "bold"))
+val_fanta = tk.Label(refrescos, text="5", font=("Arial", 15, "bold"))
 val_fanta.place(x=160, y=104)
 
 r_sprite = tk.Radiobutton(refrescos, text="Sprite", variable=opcion_refrescos, value=3, font=("Arial", 15, "bold"), 
                           command=cambio_etiqueta_valor, state="disabled")
 r_sprite. place(x=30, y=150)
-val_sprite= tk.Label(refrescos, text="0", font=("Arial", 15, "bold"))
+val_sprite= tk.Label(refrescos, text="5", font=("Arial", 15, "bold"))
 val_sprite.place(x=160, y=154)
 
 r_aga = tk.Radiobutton(refrescos, text="Aga", variable=opcion_refrescos, value=4, font=("Arial", 15, "bold"), 
                        command=cambio_etiqueta_valor, state="disabled")
 r_aga. place(x=30, y=200)
-val_aga = tk.Label(refrescos, text="0", font=("Arial", 15, "bold"))
+val_aga = tk.Label(refrescos, text="5", font=("Arial", 15, "bold"))
 val_aga.place(x=160, y=204)
 
 r_jarrito = tk.Radiobutton(refrescos, text="Jarrito", variable=opcion_refrescos, value=5, font=("Arial", 15, "bold"), 
                            command=cambio_etiqueta_valor, state="disabled")
 r_jarrito. place(x=30, y=250)
-val_jarrito = tk.Label(refrescos, text="0", font=("Arial", 15, "bold"))
+val_jarrito = tk.Label(refrescos, text="5", font=("Arial", 15, "bold"))
 val_jarrito.place(x=160, y=254)
 
 r_mundet = tk.Radiobutton(refrescos, text="Mundet", variable=opcion_refrescos, value=6, font=("Arial", 15, "bold"), 
                           command=cambio_etiqueta_valor, state="disabled")
 r_mundet. place(x=30, y=300)
-val_mundet = tk.Label(refrescos, text="0", font=("Arial", 15, "bold"))
+val_mundet = tk.Label(refrescos, text="5", font=("Arial", 15, "bold"))
 val_mundet.place(x=160, y=304)
 
 etiq_ref = {

@@ -1,0 +1,21 @@
+Cliente: pedro
+
+Orden de pizza(s):
+|Tamaño: Chica|Ingrediente(s): Piña|Num. de pizzas: 2|Total: $120
+|Tamaño: Mediana|Ingrediente(s): Champiñones|Num. de pizzas: 2|Total: $200
+|Tamaño: Mediana|Ingrediente(s): Champiñones|Num. de pizzas: 1|Total: $110
+-----------------------------------------------
+
+Cliente: dario
+
+Orden de pizza(s):
+|Tamaño: Grande|Ingrediente(s): Jamón|Num. de pizzas: 5|Total: $650
+-----------------------------------------------
+
+Cliente: veronica
+
+Orden de pizza(s):
+|Tamaño: Mediana|Ingrediente(s): Champiñones|Num. de pizzas: 2|Total: $180
+-----------------------------------------------
+
+Ventas totales: $1260
